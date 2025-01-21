@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionnaire de Cave à Vin</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestionnaire de Cave à Vin</h1>
+        
+        <div class="actions">
+            <div class="section">
+                <h2>Créer une nouvelle cave</h2>
+                <form id="creation-cave">
+                    <div class="form-group">
+                        <label for="nom">Nom de la cave:</label>
+                        <input type="text" id="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="largeur">Largeur (nombre de colonnes):</label>
+                        <input type="number" id="largeur" min="1" max="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hauteur">Hauteur (nombre de rangées):</label>
+                        <input type="number" id="hauteur" min="1" max="20" required>
+                    </div>
+                    <button type="submit">Créer la cave</button>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>Ouvrir une cave existante</h2>
+                <select id="caves-existantes">
+                    <option value="">Sélectionnez une cave...</option>
+                </select>
+                <button onclick="ouvrirCave()">Ouvrir</button>
+            </div>
+        </div>
+    </div>
+    <script src="static/script.js"></script>
+</body>
+</html>

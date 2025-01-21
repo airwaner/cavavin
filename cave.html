@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Cave à Vin</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="main-container">
+        <header>
+		<div class="cave-header">
+                <h1 id="cave-name">Cave à Vin</h1>
+                <button id="btn-supprimer-cave" class="btn-danger" onclick="supprimerCave()">
+                    Supprimer cette cave
+                </button>
+            </div>
+            <h1 id="cave-name">Cave à Vin</h1>
+            <div class="stats" id="stats-container">
+                <div class="stat-box">
+                    <h3>Statistiques globales</h3>
+                    <p>Occupation: <span id="occupation">0</span>%</p>
+                    <p>Cases occupées: <span id="cases-occupees">0</span> / <span id="total-cases">0</span></p>
+                    <p>Total bouteilles: <span id="total-bouteilles">0</span></p>
+                    <p>Valeur totale: <span id="valeur-totale">0</span> €</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Par type de vin</h3>
+                    <div class="stats-details" id="stats-details">
+                        <!-- Rempli par JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="cave-container">
+                <h2>Cave</h2>
+                <div class="cave-grid" id="cave-grid">
+                    <!-- La grille sera générée en JavaScript -->
+                </div>
+            </div>
+            
+            <div class="stock-container">
+                <h2>Stock non rangé</h2>
+                <div id="stock-list">
+                    <!-- Le stock sera généré en JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="form-bouteille" class="modal">
+            <div class="modal-content">
+                <h2>Détails de la bouteille</h2>
+                <form id="bouteille-form">
+                    <input type="hidden" id="position-x">
+                    <input type="hidden" id="position-y">
+                    
+                    <div class="form-group">
+                        <label for="type-vin">Type de vin:</label>
+                        <select id="type-vin" required>
+                            <option value="rouge">Rouge</option>
+                            <option value="blanc">Blanc</option>
+                            <option value="rose">Rosé</option>
+                            <option value="champagne">Champagne</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nom-vin">Nom du vin:</label>
+                        <input type="text" id="nom-vin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="domaine">Domaine:</label>
+                        <input type="text" id="domaine">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appellation">Appellation:</label>
+                        <input type="text" id="appellation">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="millesime">Millésime:</label>
+                        <input type="number" id="millesime">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prix">Prix (€):</label>
+                        <input type="number" id="prix" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantite">Quantité:</label>
+                        <input type="number" id="quantite" min="1" value="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="commentaire">Commentaire:</label>
+                        <textarea id="commentaire"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit">Enregistrer</button>
+                        <button type="button" onclick="fermerModal()">Annuler</button>
+                        <button type="button" id="btn-retirer" class="btn-danger" onclick="retirerBouteille()">
+                            Retirer la bouteille
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="static/cave.js"></script>
+</html>
+</body>
