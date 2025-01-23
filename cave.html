@@ -2,62 +2,73 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestionnaire de cave à vin - Visualisation et gestion de votre cave">
     <title>Cave à Vin</title>
     <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" href="favicon2.webp" type="image/webp">
 </head>
 <body>
     <div class="main-container">
         <header>
-		<div class="cave-header">
+            <div class="cave-header">
                 <h1 id="cave-name">Cave à Vin</h1>
-                <button id="btn-supprimer-cave" class="btn-danger" onclick="supprimerCave()">
-                    Supprimer cette cave
-                </button>
+                <div class="header-buttons">
+                    <button id="btn-recherche" class="btn-primary" onclick="ouvrirRecherche()" aria-label="Rechercher des bouteilles">
+                        Rechercher
+                    </button>
+                    <button id="btn-supprimer-cave" class="btn-danger" onclick="supprimerCave()" aria-label="Supprimer cette cave">
+                        Supprimer cette cave
+                    </button>
+                </div>
             </div>
-            <h1 id="cave-name">Cave à Vin</h1>
+            
             <div class="stats" id="stats-container">
                 <div class="stat-box">
-                    <h3>Statistiques globales</h3>
-                    <p>Occupation: <span id="occupation">0</span>%</p>
-                    <p>Cases occupées: <span id="cases-occupees">0</span> / <span id="total-cases">0</span></p>
-                    <p>Total bouteilles: <span id="total-bouteilles">0</span></p>
-                    <p>Valeur totale: <span id="valeur-totale">0</span> €</p>
+                    <h2>Statistiques globales</h2>
+                    <div class="stat-content">
+                        <p>Occupation: <span id="occupation">0</span>%</p>
+                        <p>Cases occupées: <span id="cases-occupees">0</span> / <span id="total-cases">0</span></p>
+                        <p>Total bouteilles: <span id="total-bouteilles">0</span></p>
+                        <p>Valeur totale: <span id="valeur-totale">0</span> €</p>
+                    </div>
                 </div>
                 <div class="stat-box">
-                    <h3>Par type de vin</h3>
+                    <h2>Par type de vin</h2>
                     <div class="stats-details" id="stats-details">
-                        <!-- Rempli par JavaScript -->
+                        <!-- Rempli dynamiquement par JavaScript -->
                     </div>
                 </div>
             </div>
         </header>
         
-        <div class="content">
-            <div class="cave-container">
+        <main class="content">
+            <section class="cave-container">
                 <h2>Cave</h2>
-                <div class="cave-grid" id="cave-grid">
+                <div class="cave-grid" id="cave-grid" role="grid">
                     <!-- La grille sera générée en JavaScript -->
                 </div>
-            </div>
+            </section>
             
-            <div class="stock-container">
+            <aside class="stock-container">
                 <h2>Stock non rangé</h2>
-                <div id="stock-list">
+                <div id="stock-list" role="list">
                     <!-- Le stock sera généré en JavaScript -->
                 </div>
-            </div>
-        </div>
+            </aside>
+        </main>
         
-        <div id="form-bouteille" class="modal">
+        <!-- Modal formulaire bouteille -->
+        <div id="form-bouteille" class="modal" role="dialog" aria-labelledby="modal-title">
             <div class="modal-content">
-                <h2>Détails de la bouteille</h2>
+                <h2 id="modal-title">Détails de la bouteille</h2>
                 <form id="bouteille-form">
-                    <input type="hidden" id="position-x">
-                    <input type="hidden" id="position-y">
+                    <input type="hidden" id="position-x" name="position-x">
+                    <input type="hidden" id="position-y" name="position-y">
                     
                     <div class="form-group">
-                        <label for="type-vin">Type de vin:</label>
-                        <select id="type-vin" required>
+                        <label for="type-vin">Type de vin :</label>
+                        <select id="type-vin" name="type-vin" required>
                             <option value="rouge">Rouge</option>
                             <option value="blanc">Blanc</option>
                             <option value="rose">Rosé</option>
@@ -66,43 +77,47 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="nom-vin">Nom du vin:</label>
-                        <input type="text" id="nom-vin" required>
+                        <label for="nom-vin">Nom du vin :</label>
+                        <input type="text" id="nom-vin" name="nom-vin" list="noms-list" required>
+                        <datalist id="noms-list"></datalist>
                     </div>
                     
                     <div class="form-group">
-                        <label for="domaine">Domaine:</label>
-                        <input type="text" id="domaine">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="appellation">Appellation:</label>
-                        <input type="text" id="appellation">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="millesime">Millésime:</label>
-                        <input type="number" id="millesime">
+                        <label for="domaine">Domaine :</label>
+                        <input type="text" id="domaine" name="domaine" list="domaines-list">
+                        <datalist id="domaines-list"></datalist>
                     </div>
 
                     <div class="form-group">
-                        <label for="prix">Prix (€):</label>
-                        <input type="number" id="prix" step="0.01" min="0" required>
+                        <label for="appellation">Appellation :</label>
+                        <input type="text" id="appellation" name="appellation" list="appellations-list">
+                        <datalist id="appellations-list"></datalist>
                     </div>
                     
                     <div class="form-group">
-                        <label for="quantite">Quantité:</label>
-                        <input type="number" id="quantite" min="1" value="1" required>
+                        <label for="millesime">Millésime :</label>
+                        <input type="number" id="millesime" name="millesime" min="1900" max="2100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prix">Prix (€) :</label>
+                        <input type="number" id="prix" name="prix" step="0.01" min="0" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="commentaire">Commentaire:</label>
-                        <textarea id="commentaire"></textarea>
+                        <label for="quantite">Quantité :</label>
+                        <input type="number" id="quantite" name="quantite" min="1" value="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="commentaire">Commentaire :</label>
+                        <textarea id="commentaire" name="commentaire" rows="3"></textarea>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="submit">Enregistrer</button>
-                        <button type="button" onclick="fermerModal()">Annuler</button>
+                        <button type="submit" id="btn-enregistrer" class="btn-primary">Enregistrer</button>
+                        <button type="button" id="btn-modifier" class="btn-primary" style="display: none;">Modifier</button>
+                        <button type="button" class="btn-secondary" onclick="fermerModal()">Annuler</button>
                         <button type="button" id="btn-retirer" class="btn-danger" onclick="retirerBouteille()">
                             Retirer la bouteille
                         </button>
@@ -112,5 +127,5 @@
         </div>
     </div>
     <script src="static/cave.js"></script>
-</html>
 </body>
+</html>

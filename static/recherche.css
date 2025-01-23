@@ -1,0 +1,101 @@
+.search-container {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.filters {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.results {
+    flex: 3;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.price-range {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.price-range input {
+    width: calc(50% - 15px);
+}
+
+.price-range span {
+    color: #666;
+}
+
+#resultats-count {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.resultat-item {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resultat-item .info-primaire {
+    flex: 2;
+}
+
+.resultat-item .info-secondaire {
+    flex: 1;
+    text-align: right;
+}
+
+.resultat-item h3 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.badge.rouge { background-color: #8B0000; color: white; }
+.badge.blanc { background-color: #FFD700; color: black; }
+.badge.rose { background-color: #FFB6C1; color: black; }
+.badge.champagne { background-color: #F4E6BE; color: black; }
+
+.btn-retour {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.btn-retour:hover {
+    background-color: #5a6268;
+}
+
+.cave-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.cave-link:hover {
+    text-decoration: underline;
+}

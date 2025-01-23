@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Recherche - Cave à Vin</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/recherche.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Recherche dans les caves</h1>
+            <a href="index.html" class="btn-retour">Retour à l'accueil</a>
+        </header>
+
+        <div class="search-container">
+            <div class="filters">
+                <div class="form-group">
+                    <label for="search">Recherche par nom:</label>
+                    <input type="text" id="search" placeholder="Nom du vin...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="type-vin">Type de vin:</label>
+                    <select id="type-vin">
+                        <option value="">Tous</option>
+                        <option value="rouge">Rouge</option>
+                        <option value="blanc">Blanc</option>
+                        <option value="rose">Rosé</option>
+                        <option value="champagne">Champagne</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Fourchette de prix:</label>
+                    <div class="price-range">
+                        <input type="number" id="prix-min" placeholder="Min €">
+                        <span>à</span>
+                        <input type="number" id="prix-max" placeholder="Max €">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Millésime:</label>
+                    <div class="price-range">
+                        <input type="number" id="millesime-min" placeholder="Depuis">
+                        <span>à</span>
+                        <input type="number" id="millesime-max" placeholder="Jusqu'à">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cave">Cave:</label>
+                    <select id="cave">
+                        <option value="">Toutes les caves</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tri">Trier par:</label>
+                    <select id="tri">
+                        <option value="nom">Nom</option>
+                        <option value="prix-asc">Prix croissant</option>
+                        <option value="prix-desc">Prix décroissant</option>
+                        <option value="millesime-desc">Millésime récent</option>
+                        <option value="millesime-asc">Millésime ancien</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="results">
+                <div id="resultats-count"></div>
+                <div id="resultats-list"></div>
+            </div>
+        </div>
+    </div>
+    <script src="static/recherche.js"></script>
+</body>
+</html>

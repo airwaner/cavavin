@@ -1,23 +1,19 @@
 <?php
-// Activer l'affichage des erreurs pour le débogage
+// Configuration des erreurs et du type de contenu
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-// Définir le type de contenu comme JSON
 header('Content-Type: application/json');
 
-// Inclure la configuration
+// Inclusion de la configuration
 require_once 'config.php';
 
 // Log de débogage
 error_log("Requête reçue : " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI']);
 
-// Récupérer la méthode HTTP et l'endpoint
+// Récupération de la méthode et de l'endpoint
 $method = $_SERVER['REQUEST_METHOD'];
 $endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
-
-// Log de l'endpoint
 error_log("Endpoint appelé : " . $endpoint);
 
 try {
@@ -30,12 +26,111 @@ try {
                     error_log("Caves trouvées : " . print_r($caves, true));
                     echo json_encode(['success' => true, 'caves' => $caves]);
                     break;
-					
-					case 'caves_existantes':
-                    $stmt = $pdo->query('SELECT id, nom FROM caves ORDER BY nom');
-                    $caves = $stmt->fetchAll();
-                    error_log("Caves trouvées : " . print_r($caves, true));
-                    echo json_encode(['success' => true, 'caves' => $caves]);
+
+                case 'search_bouteilles':
+                    $params = [];
+                    $conditions = [];
+                    
+                    if (!empty($_GET['search'])) {
+                        $conditions[] = "b.nom LIKE ?";
+                        $params[] = "%" . $_GET['search'] . "%";
+                    }
+                    
+                    if (!empty($_GET['type'])) {
+                        $conditions[] = "b.type_vin = ?";
+                        $params[] = $_GET['type'];
+                    }
+                    
+                    if (!empty($_GET['prix_min'])) {
+                        $conditions[] = "b.prix >= ?";
+                        $params[] = floatval($_GET['prix_min']);
+                    }
+                    
+                    if (!empty($_GET['prix_max'])) {
+                        $conditions[] = "b.prix <= ?";
+                        $params[] = floatval($_GET['prix_max']);
+                    }
+                    
+                    if (!empty($_GET['millesime_min'])) {
+                        $conditions[] = "b.millesime >= ?";
+                        $params[] = intval($_GET['millesime_min']);
+                    }
+                    
+                    if (!empty($_GET['millesime_max'])) {
+                        $conditions[] = "b.millesime <= ?";
+                        $params[] = intval($_GET['millesime_max']);
+                    }
+                    
+                    if (!empty($_GET['cave_id'])) {
+                        $conditions[] = "b.cave_id = ?";
+                        $params[] = intval($_GET['cave_id']);
+                    }
+                    
+                    $sql = "SELECT b.*, c.nom as cave_nom 
+                            FROM bouteilles b 
+                            LEFT JOIN caves c ON b.cave_id = c.id";
+                    
+                    if (!empty($conditions)) {
+                        $sql .= " WHERE " . implode(" AND ", $conditions);
+                    }
+                    
+                    // Gestion du tri
+                    $tri = $_GET['tri'] ?? 'nom';
+                    switch($tri) {
+                        case 'prix-asc':
+                            $sql .= " ORDER BY b.prix ASC";
+                            break;
+                        case 'prix-desc':
+                            $sql .= " ORDER BY b.prix DESC";
+                            break;
+                        case 'millesime-desc':
+                            $sql .= " ORDER BY b.millesime DESC";
+                            break;
+                        case 'millesime-asc':
+                            $sql .= " ORDER BY b.millesime ASC";
+                            break;
+                        default:
+                            $sql .= " ORDER BY b.nom ASC";
+                    }
+                    
+                    try {
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute($params);
+                        $bouteilles = $stmt->fetchAll();
+                        echo json_encode([
+                            'success' => true,
+                            'bouteilles' => $bouteilles
+                        ]);
+                    } catch (Exception $e) {
+                        echo json_encode([
+                            'success' => false,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                    break;
+
+                case 'get_suggestions':
+                    $field = isset($_GET['field']) ? $_GET['field'] : '';
+                    $allowed_fields = ['nom', 'domaine', 'appellation'];
+                    
+                    if (!in_array($field, $allowed_fields)) {
+                        throw new Exception('Champ non autorisé');
+                    }
+                    
+                    $stmt = $pdo->prepare("
+                        SELECT DISTINCT $field 
+                        FROM bouteilles 
+                        WHERE $field IS NOT NULL 
+                        AND $field != '' 
+                        ORDER BY $field ASC
+                    ");
+                    $stmt->execute();
+                    $suggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                    
+                    echo json_encode([
+                        'success' => true,
+                        'suggestions' => $suggestions
+                    ]);
                     break;
 
                 case 'get_cave':
@@ -129,7 +224,6 @@ try {
             break;
 
         case 'POST':
-            // Récupérer et logger les données POST
             $input = file_get_contents('php://input');
             error_log("Données POST reçues : " . $input);
             $data = json_decode($input, true);
@@ -153,25 +247,6 @@ try {
                         ]);
                         break;
                     }
-					
-					case 'supprimer_cave':
-                    $pdo->beginTransaction();
-                    try {
-                        // D'abord supprimer toutes les bouteilles de la cave
-                        $stmt = $pdo->prepare('DELETE FROM bouteilles WHERE cave_id = ?');
-                        $stmt->execute([$data['cave_id']]);
-                        
-                        // Ensuite supprimer la cave
-                        $stmt = $pdo->prepare('DELETE FROM caves WHERE id = ?');
-                        $stmt->execute([$data['cave_id']]);
-                        
-                        $pdo->commit();
-                        echo json_encode(['success' => true]);
-                    } catch (Exception $e) {
-                        $pdo->rollBack();
-                        throw $e;
-                    }
-                    break;
 
                     try {
                         $stmt = $pdo->prepare('
@@ -193,6 +268,25 @@ try {
                         ]);
                     } catch (PDOException $e) {
                         error_log("Erreur PDO lors de la création de la cave : " . $e->getMessage());
+                        throw $e;
+                    }
+                    break;
+
+                case 'supprimer_cave':
+                    $pdo->beginTransaction();
+                    try {
+                        // D'abord supprimer toutes les bouteilles de la cave
+                        $stmt = $pdo->prepare('DELETE FROM bouteilles WHERE cave_id = ?');
+                        $stmt->execute([$data['cave_id']]);
+                        
+                        // Ensuite supprimer la cave
+                        $stmt = $pdo->prepare('DELETE FROM caves WHERE id = ?');
+                        $stmt->execute([$data['cave_id']]);
+                        
+                        $pdo->commit();
+                        echo json_encode(['success' => true]);
+                    } catch (Exception $e) {
+                        $pdo->rollBack();
                         throw $e;
                     }
                     break;
@@ -266,121 +360,159 @@ try {
                             'success' => true,
                             'bouteille_id' => $pdo->lastInsertId()
                         ]);
-                    } catch (Exception $e) {
+						
+						} catch (Exception $e) {
                         $pdo->rollBack();
                         throw $e;
                     }
                     break;
-
-                case 'ranger_bouteille':
-                    $pdo->beginTransaction();
-                    try {
-                        // Vérifier si la position est libre
-                        $stmt = $pdo->prepare('
-                            SELECT id FROM bouteilles 
-                            WHERE cave_id = ? AND position_x = ? AND position_y = ?
-                        ');
-                        $stmt->execute([
-                            $data['cave_id'], 
-                            $data['position_x'], 
-                            $data['position_y']
-                        ]);
-                        
-                        if (!$stmt->fetch()) {
-                            // Récupérer les infos de la bouteille en stock
-                            $stmt = $pdo->prepare('SELECT * FROM bouteilles WHERE id = ?');
-                            $stmt->execute([$data['bouteille_id']]);
-                            $bouteille = $stmt->fetch();
-
-                            // Créer une nouvelle entrée pour la bouteille rangée
+					
+						case 'modifier_bouteille':
+                        $pdo->beginTransaction();
+                        try {
                             $stmt = $pdo->prepare('
-                                INSERT INTO bouteilles (
-                                    cave_id, position_x, position_y, type_vin, nom,
-                                    domaine, appellation, millesime, prix, quantite, commentaire
-                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+                                UPDATE bouteilles 
+                                SET type_vin = ?, 
+                                    nom = ?,
+                                    domaine = ?,
+                                    appellation = ?,
+                                    millesime = ?,
+                                    prix = ?,
+                                    quantite = ?,
+                                    commentaire = ?
+                                WHERE id = ? AND cave_id = ?
+                            ');
+                            
+                            $stmt->execute([
+                                $data['type_vin'],
+                                $data['nom'],
+                                $data['domaine'],
+                                $data['appellation'],
+                                $data['millesime'],
+                                $data['prix'],
+                                $data['quantite'],
+                                $data['commentaire'],
+                                $data['id'],
+                                $data['cave_id']
+                            ]);
+
+                            $pdo->commit();
+                            echo json_encode(['success' => true]);
+                        } catch (Exception $e) {
+                            $pdo->rollBack();
+                            throw $e;
+                        }
+                        break;
+
+                    case 'ranger_bouteille':
+                        $pdo->beginTransaction();
+                        try {
+                            // Vérifier si la position est libre
+                            $stmt = $pdo->prepare('
+                                SELECT id FROM bouteilles 
+                                WHERE cave_id = ? AND position_x = ? AND position_y = ?
                             ');
                             $stmt->execute([
                                 $data['cave_id'], 
                                 $data['position_x'], 
-                                $data['position_y'],
-                                $bouteille['type_vin'], 
-                                $bouteille['nom'],
-                                $bouteille['domaine'], 
-                                $bouteille['appellation'],
-                                $bouteille['millesime'], 
-                                $bouteille['prix'],
-                                $bouteille['commentaire']
+                                $data['position_y']
                             ]);
-
-                            // Mettre à jour ou supprimer l'entrée du stock
-                            if ($bouteille['quantite'] > 1) {
-                                $stmt = $pdo->prepare('
-                                    UPDATE bouteilles 
-                                    SET quantite = quantite - 1 
-                                    WHERE id = ?
-                                ');
+                            
+                            if (!$stmt->fetch()) {
+                                // Récupérer les infos de la bouteille en stock
+                                $stmt = $pdo->prepare('SELECT * FROM bouteilles WHERE id = ?');
                                 $stmt->execute([$data['bouteille_id']]);
+                                $bouteille = $stmt->fetch();
+
+                                // Créer une nouvelle entrée pour la bouteille rangée
+                                $stmt = $pdo->prepare('
+                                    INSERT INTO bouteilles (
+                                        cave_id, position_x, position_y, type_vin, nom,
+                                        domaine, appellation, millesime, prix, quantite, commentaire
+                                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+                                ');
+                                $stmt->execute([
+                                    $data['cave_id'], 
+                                    $data['position_x'], 
+                                    $data['position_y'],
+                                    $bouteille['type_vin'], 
+                                    $bouteille['nom'],
+                                    $bouteille['domaine'], 
+                                    $bouteille['appellation'],
+                                    $bouteille['millesime'], 
+                                    $bouteille['prix'],
+                                    $bouteille['commentaire']
+                                ]);
+
+                                // Mettre à jour ou supprimer l'entrée du stock
+                                if ($bouteille['quantite'] > 1) {
+                                    $stmt = $pdo->prepare('
+                                        UPDATE bouteilles 
+                                        SET quantite = quantite - 1 
+                                        WHERE id = ?
+                                    ');
+                                    $stmt->execute([$data['bouteille_id']]);
+                                } else {
+                                    $stmt = $pdo->prepare('
+                                        DELETE FROM bouteilles 
+                                        WHERE id = ?
+                                    ');
+                                    $stmt->execute([$data['bouteille_id']]);
+                                }
+
+                                $pdo->commit();
+                                echo json_encode(['success' => true]);
                             } else {
-                                $stmt = $pdo->prepare('
-                                    DELETE FROM bouteilles 
-                                    WHERE id = ?
-                                ');
-                                $stmt->execute([$data['bouteille_id']]);
+                                $pdo->rollBack();
+                                echo json_encode([
+                                    'success' => false, 
+                                    'error' => 'Position occupée'
+                                ]);
                             }
-
-                            $pdo->commit();
-                            echo json_encode(['success' => true]);
-                        } else {
+                        } catch (Exception $e) {
                             $pdo->rollBack();
-                            echo json_encode([
-                                'success' => false, 
-                                'error' => 'Position occupée'
-                            ]);
+                            throw $e;
                         }
-                    } catch (Exception $e) {
-                        $pdo->rollBack();
-                        throw $e;
-                    }
-                    break;
+                        break;
 
-                case 'retirer_bouteille':
-                    try {
-                        $stmt = $pdo->prepare('
-                            DELETE FROM bouteilles 
-                            WHERE cave_id = ? AND position_x = ? AND position_y = ?
-                        ');
-                        $stmt->execute([
-                            $data['cave_id'], 
-                            $data['position_x'], 
-                            $data['position_y']
+                    case 'retirer_bouteille':
+                        try {
+                            $stmt = $pdo->prepare('
+                                DELETE FROM bouteilles 
+                                WHERE cave_id = ? AND position_x = ? AND position_y = ?
+                            ');
+                            $stmt->execute([
+                                $data['cave_id'], 
+                                $data['position_x'], 
+                                $data['position_y']
+                            ]);
+                            echo json_encode(['success' => true]);
+                        } catch (Exception $e) {
+                            throw $e;
+                        }
+                        break;
+
+                    default:
+                        echo json_encode([
+                            'success' => false, 
+                            'error' => 'Endpoint inconnu'
                         ]);
-                        echo json_encode(['success' => true]);
-                    } catch (Exception $e) {
-                        throw $e;
-                    }
-                    break;
+                }
+                break;
 
-                default:
-                    echo json_encode([
-                        'success' => false, 
-                        'error' => 'Endpoint inconnu'
-                    ]);
-            }
-            break;
-
-        default:
-            echo json_encode([
-                'success' => false, 
-                'error' => 'Méthode non supportée'
-            ]);
+            default:
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'Méthode HTTP non supportée'
+                ]);
+        }
+    } catch (Exception $e) {
+        error_log("Erreur générale : " . $e->getMessage());
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
     }
-} catch (Exception $e) {
-    error_log("Erreur générale : " . $e->getMessage());
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ]);
-}
 
 // S'assurer qu'il n'y a pas de sortie après le JSON
 exit();

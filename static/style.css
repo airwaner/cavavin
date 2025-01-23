@@ -1,0 +1,382 @@
+/* Variables CSS globales */
+:root {
+    /* Couleurs principales */
+    --color-primary: #4CAF50;
+    --color-primary-dark: #45a049;
+    --color-secondary: #6c757d;
+    --color-danger: #dc3545;
+    --color-danger-dark: #c82333;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    
+    /* Couleurs des vins */
+    --color-wine-red: #8B0000;
+    --color-wine-white: #FFD700;
+    --color-wine-rose: #FFB6C1;
+    --color-wine-champagne: #F4E6BE;
+    
+    /* Couleurs de fond */
+    --bg-light: #f5f5f5;
+    --bg-white: #ffffff;
+    --bg-modal: rgba(0, 0, 0, 0.5);
+    
+    /* Espacement */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 30px;
+    
+    /* Bordures */
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    
+    /* Ombres */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-lg: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Reset et styles de base */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: var(--spacing-lg);
+    background-color: var(--bg-light);
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* Conteneurs principaux */
+.container, .main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: chocolate;
+    background-image: url('textures/bois4.jpg');
+    background-repeat: repeat;
+    background-size: contain;
+    background-position: center;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+/* Header et navigation */
+header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.cave-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.header-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Statistiques */
+.stats {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+    background-color: var(--bg-light);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+}
+
+.stat-box {
+    flex: 1;
+    background-color: var(--bg-white);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-box h2, .stat-box h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+.stats-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.type-stat {
+    background-color: var(--bg-light);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+}
+
+/* Styles spécifiques aux types de vin */
+.type-stat.rouge { border-left: 4px solid var(--color-wine-red); }
+.type-stat.blanc { border-left: 4px solid var(--color-wine-white); }
+.type-stat.rose { border-left: 4px solid var(--color-wine-rose); }
+.type-stat.champagne { border-left: 4px solid var(--color-wine-champagne); }
+
+/* Layout principal */
+.content {
+    display: flex;
+    gap: var(--spacing-xl);
+}
+
+.cave-container {
+    flex: 3;
+    background-color: var(--bg-light);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+}
+
+.stock-container {
+    flex: 1;
+    background-color: var(--bg-light);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    min-width: 300px;
+}
+
+/* Grille de la cave */
+.cave-grid {
+    display: grid;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background-color: #e9ecef;
+    border-radius: var(--border-radius-lg);
+    justify-content: center;
+}
+
+/* Cases de la cave */
+.case {
+    width: 60px;
+    height: 60px;
+    background-color: #ddd;
+    border: 2px solid #999;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: var(--shadow-sm);
+}
+
+.case:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+/* Styles des cases selon le type de vin */
+.case.rouge {
+    background-color: var(--color-wine-red);
+    border-color: #4d0000;
+    color: white;
+}
+
+.case.blanc {
+    background-color: var(--color-wine-white);
+    border-color: #b39700;
+    color: black;
+}
+
+.case.rose {
+    background-color: var(--color-wine-rose);
+    border-color: #ff8da0;
+    color: black;
+}
+
+.case.champagne {
+    background-color: var(--color-wine-champagne);
+    border-color: #e6c88c;
+    color: black;
+}
+
+.case.selected {
+    animation: clignote 1s infinite;
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+/* Animation */
+@keyframes clignote {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Stock items */
+.stock-item {
+    background-color: var(--bg-white);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.stock-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+}
+
+.stock-item.selected {
+    transform: translateX(10px);
+    box-shadow: var(--shadow-md);
+    background-color: #f0f8ff;
+}
+
+/* Couleurs des items de stock */
+.stock-item.rouge { border-left-color: var(--color-wine-red); }
+.stock-item.blanc { border-left-color: var(--color-wine-white); }
+.stock-item.rose { border-left-color: var(--color-wine-rose); }
+.stock-item.champagne { border-left-color: var(--color-wine-champagne); }
+
+.stock-item .quantite {
+    font-weight: bold;
+    color: var(--color-success);
+}
+
+.stock-item .instructions {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: #e8f5e9;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9em;
+    color: #2e7d32;
+}
+
+/* Formulaires */
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius-sm);
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Boutons */
+button {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: var(--color-danger-dark);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-modal);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--bg-white);
+    margin: 5% auto;
+    padding: var(--spacing-xl);
+    max-width: 500px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-lg);
+}
+
+/* Datalist styling */
+input[list] {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--bg-white);
+}
+
+input[list]:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Media Queries pour le responsive */
+@media screen and (max-width: 1200px) {
+    .content {
+        flex-direction: column;
+    }
+    
+    .stock-container {
+        min-width: auto;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+    }
+    
+    .cave-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .modal-content {
+        margin: 2% auto;
+        width: 90%;
+    }
+}
