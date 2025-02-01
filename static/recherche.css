@@ -121,3 +121,9 @@
     gap: 5px;
     flex-wrap: wrap;
 }
+
+.position-info {
+    font-weight: bold;
+    animation: clignote 2s infinite;
+    color: #000000;
+    }

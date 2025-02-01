@@ -154,7 +154,8 @@ function creerElementBouteille(bouteille) {
         <p>
             ${bouteille.millesime ? `Millésime: ${bouteille.millesime}<br>` : ''}
             Prix: ${formatPrice(bouteille.prix)} €<br>
-            Quantité: ${bouteille.quantite}
+            Quantité: ${bouteille.quantite}<br>
+            ${bouteille.position_x!== null && bouteille.position_y!== null? `Position: <span class="position-info">${convertirCoordonnees(bouteille.position_x, bouteille.position_y)}</span>`: ''}
         </p>
     `;
     
@@ -194,4 +195,11 @@ function attacherEcouteurs() {
     // Écouteurs pour les filtres d'état de garde
     document.querySelectorAll('input[name="etat-garde"]')
         .forEach(checkbox => checkbox.addEventListener('change', filtrerEtAfficher));
+}
+
+function convertirCoordonnees(x, y) {
+    const lettres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const colonne = lettres[x];
+    const ligne = y + 1; // +1 car on ne veut pas commencer à 0
+    return `${colonne}${ligne}`;
 }
