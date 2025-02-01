@@ -1,22 +1,29 @@
 <?php
-define('DB_HOST', '192.168.1.201');
-define('DB_PORT', '3306'); // ou 3305 selon la version que vous préférez utiliser
-define('DB_NAME', 'cavavin');
-define('DB_USER', 'cavavin');
-define('DB_PASS', 'passphrase');
+// Définition du chemin de la base de données SQLite
+define('DB_FILE', __DIR__ . '/db/cavavin.sqlite');
 
 try {
-    $pdo = new PDO(
-        "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME,
-        DB_USER,
-        DB_PASS,
-        array(
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-        )
-    );
+    $pdo = new PDO("sqlite:" . DB_FILE);
+    
+    // Configuration importante pour SQLite
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    
+    // Activation des clés étrangères pour SQLite
+    $pdo->exec('PRAGMA foreign_keys = ON;');
+    
+    // Activation du support des timestamps
+    $pdo->exec('PRAGMA journal_mode = WAL;');
+    
+    // Pour assurer la compatibilité avec MariaDB pour les comparaisons LIKE
+    $pdo->exec('PRAGMA case_sensitive_like = OFF;');
+    
 } catch(PDOException $e) {
     die("Erreur de connexion à la base de données : " . $e->getMessage());
+}
+
+// Fonction utilitaire pour gérer la compatibilité des dates entre MariaDB et SQLite
+function formatSqliteDate($date = null) {
+    return $date ? date('Y-m-d H:i:s', strtotime($date)) : date('Y-m-d H:i:s');
 }
 ?>

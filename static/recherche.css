@@ -99,3 +99,25 @@
 .cave-link:hover {
     text-decoration: underline;
 }
+
+.badge-apogee {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 5px;
+    color: black;
+}
+
+.badge-apogee.jeunesse { background-color: var(--indicateur-jeunesse, #4CAF50); }
+.badge-apogee.apogee { background-color: var(--indicateur-apogee, #FFC107); }
+.badge-apogee.maturite { background-color: var(--indicateur-maturite, #FF9800); }
+.badge-apogee.declin { background-color: var(--indicateur-declin, #F44336); }
+
+/* On ajuste légèrement le style existant des h3 pour bien aligner les badges */
+.info-primaire h3 {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}

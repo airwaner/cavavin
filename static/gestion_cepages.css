@@ -1,0 +1,99 @@
+/* static/gestion_cepages.css */
+.cepages-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.filtres-section,
+.form-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.list-section {
+    grid-column: 1 / -1;
+}
+
+.cepages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cepage-item {
+    background-color: white;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cepage-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.cepage-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-primary);
+}
+
+.cepage-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.cepage-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.form-help {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Styles des facteurs de garde */
+.facteur-garde {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.facteur-garde.faible { background-color: #ffecb3; }
+.facteur-garde.normal { background-color: #c8e6c9; }
+.facteur-garde.eleve { background-color: #bbdefb; }
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .cepages-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .filtres-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .filtres-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .cepages-grid {
+        grid-template-columns: 1fr;
+    }
+}

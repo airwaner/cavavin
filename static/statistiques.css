@@ -1,0 +1,134 @@
+.stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.stats-row {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.stats-card {
+    flex: 1;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 400px;
+}
+
+.chart-container {
+    height: 350px;
+    width: 100%;
+}
+
+.btn-retour {
+    background-color: #6c757d;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-retour:hover {
+    background-color: #5a6268;
+}
+
+@media (max-width: 1200px) {
+    .stats-row {
+        flex-direction: column;
+    }
+}
+
+.occupation-grid {
+    display: grid;
+    gap: 2px;
+    background: #f5f5f5;
+    padding: 10px;
+    justify-content: center;
+}
+
+.occupation-cell {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #eee;
+}
+
+.occupation-cell.rouge { background-color: var(--color-wine-red); }
+.occupation-cell.blanc { background-color: var(--color-wine-white); }
+.occupation-cell.rose { background-color: var(--color-wine-rose); }
+.occupation-cell.champagne { background-color: var(--color-wine-champagne); }
+
+.appellations-table {
+    width: 100%;
+    font-size: 0.9em;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.table-row.header {
+    font-weight: bold;
+    background-color: #f5f5f5;
+    position: sticky;
+    top: 0;
+}
+
+.cell {
+    display: flex;
+    align-items: center;
+}
+
+.cell.appellation {
+    font-weight: 500;
+}
+
+.cell.nombre {
+    justify-content: center;
+}
+
+.cell.valeur {
+    justify-content: flex-end;
+}
+
+.cell.types {
+    gap: 4px;
+    justify-content: center;
+}
+
+.type-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.type-dot.rouge { background-color: var(--color-wine-red); }
+.type-dot.blanc { background-color: var(--color-wine-white); }
+.type-dot.rose { background-color: var(--color-wine-rose); }
+.type-dot.champagne { background-color: var(--color-wine-champagne); }
+
+.appellations-table::-webkit-scrollbar {
+    width: 8px;
+}
+
+.appellations-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.appellations-table::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}

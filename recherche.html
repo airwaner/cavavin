@@ -5,12 +5,16 @@
     <title>Recherche - Cave à Vin</title>
     <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="static/recherche.css">
+	<script src="static/utils.js"></script>
+	<script src="static/header.js"></script>
+    <script src="static/config-garde.js"></script>
+    <script src="static/garde.js"></script>
+    <script src="static/recherche.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Recherche dans les caves</h1>
-            <a href="index.html" class="btn-retour">Retour à l'accueil</a>
+            <h1>Recherche en Cave(s)</h1>        
         </header>
 
         <div class="search-container">
@@ -39,8 +43,14 @@
                         <input type="number" id="prix-max" placeholder="Max €">
                     </div>
                 </div>
-                
                 <div class="form-group">
+					<label for="cepage">Cépage:</label>
+					<input type="text" id="cepage" placeholder="Filtrer par cépage..." list="cepages-list">
+					<datalist id="cepages-list">
+						<!-- Sera rempli dynamiquement -->
+					</datalist>
+				</div>
+				<div class="form-group">
                     <label>Millésime:</label>
                     <div class="price-range">
                         <input type="number" id="millesime-min" placeholder="Depuis">
@@ -49,6 +59,27 @@
                     </div>
                 </div>
                 
+				<div class="form-group">
+					<label>État de garde:</label>
+					<div>
+						<input type="checkbox" name="etat-garde" value="jeunesse" id="garde-jeunesse">
+						<label for="garde-jeunesse">Jeunesse</label>
+					</div>
+					<div>
+						<input type="checkbox" name="etat-garde" value="apogee" id="garde-apogee">
+						<label for="garde-apogee">Apogée</label>
+					</div>
+					<div>
+						<input type="checkbox" name="etat-garde" value="maturite" id="garde-maturite">
+						<label for="garde-maturite">Maturité</label>
+					</div>
+					<div>
+						<input type="checkbox" name="etat-garde" value="declin" id="garde-declin">
+						<label for="garde-declin">Déclin</label>
+					</div>
+				</div>
+
+
                 <div class="form-group">
                     <label for="cave">Cave:</label>
                     <select id="cave">

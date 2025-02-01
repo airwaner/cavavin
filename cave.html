@@ -2,26 +2,34 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes">
     <meta name="description" content="Gestionnaire de cave à vin - Visualisation et gestion de votre cave">
     <title>Cave à Vin</title>
     <link rel="stylesheet" href="static/style.css">
     <link rel="icon" href="favicon2.webp" type="image/webp">
-</head>
+	<script src="static/utils.js"></script>
+	<script src="static/header.js"></script>
+	<script src="static/config-garde.js"></script>
+	<script src="static/garde.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <body>
     <div class="main-container">
         <header>
-            <div class="cave-header">
-                <h1 id="cave-name">Cave à Vin</h1>
-                <div class="header-buttons">
-                    <button id="btn-recherche" class="btn-primary" onclick="ouvrirRecherche()" aria-label="Rechercher des bouteilles">
-                        Rechercher
-                    </button>
-                    <button id="btn-supprimer-cave" class="btn-danger" onclick="supprimerCave()" aria-label="Supprimer cette cave">
-                        Supprimer cette cave
-                    </button>
-                </div>
-            </div>
+             <div class="cave-header">
+            <h1 id="cave-name" class="cave-title">Cave à Vin</h1>
+            <div class="header-buttons">
+				<button id="btn-mode-deplacement" class="btn-primary" onclick="toggleModeDeplacement()">
+					Mode déplacement
+				</button>
+				<button id="btn-export-liste" class="btn-primary" onclick="exporterListePDF()">
+					Exporter la liste
+				</button>
+				<button id="btn-supprimer-cave" class="btn-danger" onclick="supprimerCave()">
+					Supprimer cette cave
+				</button>
+			</div>
+        </div>
             
             <div class="stats" id="stats-container">
                 <div class="stat-box">
@@ -44,11 +52,31 @@
         
         <main class="content">
             <section class="cave-container">
-                <h2>Cave</h2>
-                <div class="cave-grid" id="cave-grid" role="grid">
-                    <!-- La grille sera générée en JavaScript -->
-                </div>
-            </section>
+    <h2>Cave</h2>
+    <div class="legende-garde">
+        <div class="legende-item">
+            <span class="indicateur jeunesse"></span>
+            <span class="label">Jeunesse</span>
+        </div>
+        <div class="legende-item">
+		    <span class="indicateur maturite"></span>
+            <span class="label">Maturité</span>
+        </div>
+        <div class="legende-item">
+            <span class="indicateur apogee"></span>
+            <span class="label">Apogée</span>
+        </div>
+        <div class="legende-item">
+            <span class="indicateur declin"></span>
+            <span class="label">Déclin</span>
+        </div>
+    </div>
+	<div class="cave-scroll-container">
+    <div class="cave-grid" id="cave-grid" role="grid">
+        <!-- La grille sera générée en JavaScript -->
+    </div>
+	</div>
+</section>
             
             <aside class="stock-container">
                 <h2>Stock non rangé</h2>
@@ -66,6 +94,11 @@
                     <input type="hidden" id="position-x" name="position-x">
                     <input type="hidden" id="position-y" name="position-y">
                     
+					<!-- Grille de formulaire pour une meilleure organisation -->
+            <div class="form-grid">
+                <!-- Informations principales -->
+                <div class="form-section">
+				
                     <div class="form-group">
                         <label for="type-vin">Type de vin :</label>
                         <select id="type-vin" name="type-vin" required>
@@ -82,6 +115,7 @@
                         <datalist id="noms-list"></datalist>
                     </div>
                     
+                     <div class="form-section">
                     <div class="form-group">
                         <label for="domaine">Domaine :</label>
                         <input type="text" id="domaine" name="domaine" list="domaines-list">
@@ -94,6 +128,13 @@
                         <datalist id="appellations-list"></datalist>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="cepage">Cépage :</label>
+                        <input type="text" id="cepage" name="cepage" list="cepages-list">
+                        <datalist id="cepages-list"></datalist>
+                    </div>
+					</div>
+                   <div class="form-section">
                     <div class="form-group">
                         <label for="millesime">Millésime :</label>
                         <input type="number" id="millesime" name="millesime" min="1900" max="2100">
@@ -108,20 +149,46 @@
                         <label for="quantite">Quantité :</label>
                         <input type="number" id="quantite" name="quantite" min="1" value="1" required>
                     </div>
+					</div>
                     
-                    <div class="form-group">
-                        <label for="commentaire">Commentaire :</label>
-                        <textarea id="commentaire" name="commentaire" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="submit" id="btn-enregistrer" class="btn-primary">Enregistrer</button>
-                        <button type="button" id="btn-modifier" class="btn-primary" style="display: none;">Modifier</button>
-                        <button type="button" class="btn-secondary" onclick="fermerModal()">Annuler</button>
-                        <button type="button" id="btn-retirer" class="btn-danger" onclick="retirerBouteille()">
-                            Retirer la bouteille
-                        </button>
-                    </div>
+					<div class="form-section">
+						<div class="form-group">
+							<label for="commentaire">Commentaire :</label>
+							<textarea id="commentaire" name="commentaire" rows="3"></textarea>
+						</div>
+					</div>
+				</div>
+					
+					<div class="form-group" id="group-update-container" style="display: none;">
+						<label class="checkbox-container">
+							<input type="checkbox" id="update-similar" name="update-similar">
+							<span class="checkmark"></span>
+							Mettre à jour les bouteilles similaires
+						</label>
+					</div>
+					
+					<div id="confirm-update-modal" class="modal">
+						<div class="modal-content">
+							<h3>Bouteilles similaires détectées</h3>
+							<p>Les bouteilles suivantes ont été identifiées comme similaires :</p>
+							<div id="similar-bottles-list" class="similar-bottles-list">
+								<!-- Liste générée dynamiquement -->
+							</div>
+							<div class="form-actions">
+								<button type="button" id="btn-confirm-update" class="btn-primary">Mettre à jour la sélection</button>
+								<button type="button" class="btn-secondary" onclick="fermerModalConfirmation()">Annuler</button>
+							</div>
+						</div>
+					</div>
+										
+                                <div class="form-actions">
+									<button type="submit" id="btn-enregistrer" class="btn-primary">Enregistrer</button>
+									<button type="button" id="btn-modifier" class="btn-primary" style="display: none;">Modifier</button>
+									<button type="button" class="btn-secondary" onclick="fermerModal()">Annuler</button>
+									<button type="button" id="btn-retirer" class="btn-danger" onclick="retirerBouteille()">
+										Retirer
+									</button>
+								</div>
                 </form>
             </div>
         </div>

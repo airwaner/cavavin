@@ -61,6 +61,7 @@ body {
     padding: var(--spacing-lg);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
+	overflow-x: hidden;
 }
 
 /* Header et navigation */
@@ -72,12 +73,36 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    /*background-image: url('textures/bois4.jpg');*/
+    background-repeat: repeat;
+    background-size: contain;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    margin-bottom: 0;
+}
+
+.cave-title {
+    font-size: 2.5em;
+    color: Black;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    padding: var(--spacing-md);
 }
 
 .header-buttons {
     display: flex;
     gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+	padding: 10px;
+    overflow-x: hidden;
 }
 
 /* Statistiques */
@@ -131,13 +156,19 @@ header {
 .cave-container {
     flex: 3;
     background-color: var(--bg-light);
+    background-image: url('textures/bois4.jpg');
     padding: var(--spacing-lg);
     border-radius: var(--border-radius-lg);
+	width: 100%;
+    max-width: 100%;
+	overflow: hidden; 
 }
 
 .stock-container {
     flex: 1;
     background-color: var(--bg-light);
+    /*background-image: url('textures/bois4.jpg');
+    opacity: 0.8;*/
     padding: var(--spacing-lg);
     border-radius: var(--border-radius-lg);
     min-width: 300px;
@@ -146,27 +177,36 @@ header {
 /* Grille de la cave */
 .cave-grid {
     display: grid;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-md);
+    gap: 7px;
+    padding: 50px;
     background-color: #e9ecef;
+    /*background-image: url('textures/bois4.jpg');*/
     border-radius: var(--border-radius-lg);
     justify-content: center;
+	width: max-content; /* Permet à la grille de prendre la largeur nécessaire */
+    max-width: 100%;
+	margin: 0 auto;
+    overflow-x: auto; /* Permet le scroll horizontal si nécessaire */
+    -webkit-overflow-scrolling: touch; /* Améliore le défilement sur iOS */
+	scroll-snap-type: x mandatory;
 }
 
 /* Cases de la cave */
 .case {
-    width: 60px;
-    height: 60px;
+	min-width: 50px; /* Taille minimum pour la lisibilité */
+    min-height: 50px;
+    width: calc(60px * var(--scale-factor, 1));
+    height: calc(60px * var(--scale-factor, 1));
     background-color: #ddd;
     border: 2px solid #999;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 50%;
+    transition: all 0.5s ease-in-out;
+    border-radius: 100%;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     box-shadow: var(--shadow-sm);
 }
@@ -326,9 +366,15 @@ button {
 
 .modal-content {
     background-color: var(--bg-white);
-    margin: 5% auto;
-    padding: var(--spacing-xl);
+    margin: 0 auto;
+    padding: var(--spacing-md);
+    width: 95%;
     max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-lg);
 }
@@ -379,4 +425,308 @@ input[list]:focus {
         margin: 2% auto;
         width: 90%;
     }
+}
+
+/* Styles pour le mode déplacement */
+.case.deplacement-source {
+    animation: pulse 0.75s infinite;
+    border: 2px dashed #4CAF50;
+}
+
+#btn-mode-deplacement.active {
+    background-color: #ff9800;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+/* Modifier le style des cases en mode déplacement */
+.case[style*="cursor: move"]:hover {
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.btn-primary.active {
+    background-color: #ff9800;  /* Orange pour bien montrer que le mode est actif */
+    border-color: #f57c00;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.5);
+}
+
+/* Un petit effet de pulsation pour attirer l'attention */
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.5); }
+    50% { box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.3); }
+    100% { box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.5); }
+}
+
+.btn-primary.active {
+    animation: pulse-border 1s infinite;
+}
+
+
+/* Ici on définit à quoi ressemblera la pastille d'état du vin (apogée, déclin etc...) */
+.case::after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+}
+
+
+.case.jeunesse::after { background-color: var(--indicateur-jeunesse, #d0ff00); }
+.case.apogee::after { background-color: var(--indicateur-apogee, #00c900); }
+.case.maturite::after { background-color: var(--indicateur-maturite, #008000); }
+.case.declin::after { background-color: var(--indicateur-declin, #c77100); }
+
+.legende-garde {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    font-size: 0.8em;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.legende-garde:hover {
+    opacity: 1;
+}
+
+.legende-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legende-item .indicateur {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.legende-item .jeunesse { background-color: var(--indicateur-jeunesse); }
+.legende-item .apogee { background-color: var(--indicateur-apogee); }
+.legende-item .maturite { background-color: var(--indicateur-maturite); }
+.legende-item .declin { background-color: var(--indicateur-declin); }
+
+.legende-item .texte {
+    color: #666;
+}
+
+.header-navigation {
+    margin-bottom: var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.header-navigation .header-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.header-navigation button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-navigation .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.header-navigation .btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.header-navigation button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Styles pour la légende des états de garde */
+.legende-garde {
+    display: flex;
+    gap: 15px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.legende-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.legende-item .indicateur {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* Utilisation des variables de couleur définies dans config-garde.js */
+.legende-item .indicateur.jeunesse {
+    background-color: var(--indicateur-jeunesse);
+}
+
+.legende-item .indicateur.apogee {
+    background-color: var(--indicateur-apogee);
+}
+
+.legende-item .indicateur.maturite {
+    background-color: var(--indicateur-maturite);
+}
+
+.legende-item .indicateur.declin {
+    background-color: var(--indicateur-declin);
+}
+
+.legende-item .label {
+    font-weight: 500;
+}
+
+@media screen and (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .cave-container {
+        padding: var(--spacing-sm);
+    }
+    
+    .case {
+        --scale-factor: 0.75; /* Réduction de la taille sur mobile */
+    }
+    
+    .modal-content {
+        padding: var(--spacing-sm);
+        width: 98%;
+    }
+    
+    /* Amélioration du formulaire sur mobile */
+    .form-group {
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    label {
+        font-size: 0.9em;
+    }
+    
+    input, select, textarea {
+        padding: 8px;
+        font-size: 16px; /* Évite le zoom automatique sur iOS */
+    }
+    
+    .form-actions {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        padding: var(--spacing-sm);
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        margin: var(--spacing-md) -var(--spacing-sm) -var(--spacing-sm);
+        display: flex;
+        gap: var(--spacing-xs);
+    }
+    
+    .form-actions button {
+        flex: 1;
+        white-space: nowrap;
+        padding: 10px;
+    }
+}
+
+/* Ajout de styles pour grands écrans */
+@media screen and (min-width: 1200px) {
+    .case {
+        --scale-factor: 1;
+    }
+    
+    .modal-content {
+        max-height: 80vh;
+    }
+}
+
+/* Ajout de styles pour tablettes */
+@media screen and (min-width: 769px) and (max-width: 1199px) {
+    .case {
+        --scale-factor: 0.85;
+    }
+}
+
+/* Gestion de l'orientation sur mobile */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .modal-content {
+        max-height: 85vh;
+    }
+    
+    .form-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+    }
+}
+/* Ajustement responsive */
+@media (max-width: 768px) {
+    .legende-garde {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .legende-item {
+        min-width: calc(50% - 15px);
+    }
+}
+
+/* Gestion des bouteilles similaires lors des modifications */
+
+.similar-bottles-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 15px 0;
+}
+
+.similar-bottle-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.similar-bottle-item:hover {
+    background-color: #f5f5f5;
+}
+
+.similar-bottle-item label {
+    margin: 0;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-container input {
+    width: auto;
+    margin-right: 10px;
 }
